@@ -54,7 +54,11 @@ class SigninRequest(BaseModel):
 class SigninResponse(BaseModel):
     token: str
 
-
+class ProfileResponse(BaseModel):
+    name: str
+    email: EmailStr
+    dob: str   # ISO8601 full-date string
+    
 # -----------------------
 # Storage helpers
 # -----------------------
@@ -189,3 +193,21 @@ def signin(req: SigninRequest):
     # 3. Create a dummy token (later you can use JWTs)
     token = f"dummy-token-for-{req.email}"
     return SigninResponse(token=token)
+
+
+@app.get("/profile", response_model=ProfileResponse)
+def get_profile(email: EmailStr):
+    """
+    Return basic profile info (name, email, dob) for the given email.
+    Reads from the same JSON we write during signup.
+    """
+    try:
+        record = read_user_record(email)
+    except ResourceNotFoundError:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    # Avoid sending password_hash back
+    name = record.get("name", "")
+    dob = record.get("dob", "")
+
+    return ProfileResponse(name=name, email=email, dob=dob)
