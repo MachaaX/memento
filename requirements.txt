@@ -4,3 +4,4 @@ pydantic
 bcrypt
 azure-storage-file-datalake
 email-validator
+google-auth[requests]
