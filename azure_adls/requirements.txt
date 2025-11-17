@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-pydantic
-bcrypt
-azure-storage-file-datalake
-email-validator
