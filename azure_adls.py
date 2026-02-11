@@ -21,10 +21,16 @@ def get_service_client() -> DataLakeServiceClient:
     """
     Build a DataLakeServiceClient from the connection string in env.
     """
-    conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+    # App Service "Application settings" -> AZURE_STORAGE_CONNECTION_STRING
+    # App Service "Connection strings" -> CUSTOMCONNSTR_AZURE_STORAGE_CONNECTION_STRING
+    conn_str = (
+        os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+        or os.getenv("CUSTOMCONNSTR_AZURE_STORAGE_CONNECTION_STRING")
+    )
     if not conn_str:
         raise RuntimeError(
-            "AZURE_STORAGE_CONNECTION_STRING environment variable is not set."
+            "Storage connection string is missing. Set "
+            "AZURE_STORAGE_CONNECTION_STRING in App Service Environment variables."
         )
     return DataLakeServiceClient.from_connection_string(conn_str)
 
