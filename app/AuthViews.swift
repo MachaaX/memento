@@ -1194,7 +1194,7 @@ final class AuthAPI {
     static let shared = AuthAPI()
 
     // Replace with your real backend URL
-    private let baseURL = URL(string: "http://127.0.0.1:8000")!
+    private let baseURL = URL(string: "https://mementoapp-apdma2cscdhhrcg.northcentralus-01.azurewebsites.net")!
 
     private init() {}
 
