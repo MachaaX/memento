@@ -1,6 +1,7 @@
 import os
 import json
 from datetime import date
+from contextlib import asynccontextmanager
 
 import bcrypt
 from fastapi import FastAPI, HTTPException
@@ -31,8 +32,6 @@ def get_service_client() -> DataLakeServiceClient:
 service_client = get_service_client()
 file_system_client = service_client.get_file_system_client(FILE_SYSTEM_NAME)
 directory_client = file_system_client.get_directory_client(DIRECTORY_NAME)
-
-app = FastAPI(title="Memento Auth API")
 
 
 # -----------------------
@@ -131,14 +130,14 @@ def read_user_record(email: str) -> dict:
     return json.loads(raw)
 
 
-# -----------------------
-# FastAPI events
-# -----------------------
-
-@app.on_event("startup")
-def startup_event():
-    # Make sure ADLS containers & directories exist
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Make sure ADLS containers & directories exist at startup
     ensure_filesystem_and_directory()
+    yield
+
+
+app = FastAPI(title="Memento Auth API", lifespan=lifespan)
 
 
 # -----------------------
